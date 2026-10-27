@@ -1,0 +1,869 @@
+{
+  "origin": "rapid7/metasploit-framework",
+  "reference_only": true,
+  "methods": [
+    {
+      "method": "auth.login",
+      "arguments": "(user,pass)",
+      "authenticated": false,
+      "source": "lib/msf/core/rpc/v10/rpc_auth.rb",
+      "line": 28
+    },
+    {
+      "method": "auth.logout",
+      "arguments": "(token)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_auth.rb",
+      "line": 71
+    },
+    {
+      "method": "auth.token_add",
+      "arguments": "(token)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_auth.rb",
+      "line": 113
+    },
+    {
+      "method": "auth.token_generate",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_auth.rb",
+      "line": 142
+    },
+    {
+      "method": "auth.token_list",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_auth.rb",
+      "line": 92
+    },
+    {
+      "method": "auth.token_remove",
+      "arguments": "(token)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_auth.rb",
+      "line": 173
+    },
+    {
+      "method": "console.create",
+      "arguments": "(opts={})",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_console.rb",
+      "line": 27
+    },
+    {
+      "method": "console.destroy",
+      "arguments": "(cid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_console.rb",
+      "line": 68
+    },
+    {
+      "method": "console.list",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_console.rb",
+      "line": 47
+    },
+    {
+      "method": "console.read",
+      "arguments": "(cid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_console.rb",
+      "line": 90
+    },
+    {
+      "method": "console.session_detach",
+      "arguments": "(cid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_console.rb",
+      "line": 169
+    },
+    {
+      "method": "console.session_kill",
+      "arguments": "(cid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_console.rb",
+      "line": 153
+    },
+    {
+      "method": "console.tabs",
+      "arguments": "(cid, line)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_console.rb",
+      "line": 138
+    },
+    {
+      "method": "console.write",
+      "arguments": "(cid, data)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_console.rb",
+      "line": 117
+    },
+    {
+      "method": "core.add_module_path",
+      "arguments": "(path)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_core.rb",
+      "line": 123
+    },
+    {
+      "method": "core.getg",
+      "arguments": "(var)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_core.rb",
+      "line": 39
+    },
+    {
+      "method": "core.module_stats",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_core.rb",
+      "line": 141
+    },
+    {
+      "method": "core.reload_modules",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_core.rb",
+      "line": 101
+    },
+    {
+      "method": "core.save",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_core.rb",
+      "line": 83
+    },
+    {
+      "method": "core.setg",
+      "arguments": "(var, val)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_core.rb",
+      "line": 53
+    },
+    {
+      "method": "core.stop",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_core.rb",
+      "line": 28
+    },
+    {
+      "method": "core.thread_kill",
+      "arguments": "(tid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_core.rb",
+      "line": 187
+    },
+    {
+      "method": "core.thread_list",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_core.rb",
+      "line": 165
+    },
+    {
+      "method": "core.unsetg",
+      "arguments": "(var)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_core.rb",
+      "line": 66
+    },
+    {
+      "method": "core.version",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_core.rb",
+      "line": 14
+    },
+    {
+      "method": "db.add_workspace",
+      "arguments": "(wspace)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 719
+    },
+    {
+      "method": "db.analyze_host",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 805
+    },
+    {
+      "method": "db.clients",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1806
+    },
+    {
+      "method": "db.connect",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1938
+    },
+    {
+      "method": "db.create_cracked_credential",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 156
+    },
+    {
+      "method": "db.create_credential",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 189
+    },
+    {
+      "method": "db.creds",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 259
+    },
+    {
+      "method": "db.current_workspace",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 613
+    },
+    {
+      "method": "db.del_client",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1855
+    },
+    {
+      "method": "db.del_creds",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 334
+    },
+    {
+      "method": "db.del_host",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1442
+    },
+    {
+      "method": "db.del_note",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1329
+    },
+    {
+      "method": "db.del_service",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1369
+    },
+    {
+      "method": "db.del_vuln",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1235
+    },
+    {
+      "method": "db.del_workspace",
+      "arguments": "(wspace)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 687
+    },
+    {
+      "method": "db.disconnect",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 2007
+    },
+    {
+      "method": "db.driver",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1912
+    },
+    {
+      "method": "db.events",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1522
+    },
+    {
+      "method": "db.get_client",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1048
+    },
+    {
+      "method": "db.get_host",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 756
+    },
+    {
+      "method": "db.get_note",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1002
+    },
+    {
+      "method": "db.get_ref",
+      "arguments": "(name)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1204
+    },
+    {
+      "method": "db.get_service",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 929
+    },
+    {
+      "method": "db.get_vuln",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1734
+    },
+    {
+      "method": "db.get_workspace",
+      "arguments": "(wspace)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 633
+    },
+    {
+      "method": "db.hosts",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 403
+    },
+    {
+      "method": "db.import_data",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1701
+    },
+    {
+      "method": "db.invalidate_login",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 231
+    },
+    {
+      "method": "db.loots",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1628
+    },
+    {
+      "method": "db.notes",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1164
+    },
+    {
+      "method": "db.report_client",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1088
+    },
+    {
+      "method": "db.report_event",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1561
+    },
+    {
+      "method": "db.report_host",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 869
+    },
+    {
+      "method": "db.report_loot",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1592
+    },
+    {
+      "method": "db.report_note",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1120
+    },
+    {
+      "method": "db.report_service",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 897
+    },
+    {
+      "method": "db.report_vuln",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1489
+    },
+    {
+      "method": "db.services",
+      "arguments": "( xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 492
+    },
+    {
+      "method": "db.set_workspace",
+      "arguments": "(wspace)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 663
+    },
+    {
+      "method": "db.status",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 1979
+    },
+    {
+      "method": "db.vulns",
+      "arguments": "(xopts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 541
+    },
+    {
+      "method": "db.workspaces",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_db.rb",
+      "line": 588
+    },
+    {
+      "method": "health.check",
+      "arguments": "",
+      "authenticated": false,
+      "source": "lib/msf/core/rpc/v10/rpc_health.rb",
+      "line": 12
+    },
+    {
+      "method": "job.info",
+      "arguments": "(jid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_job.rb",
+      "line": 49
+    },
+    {
+      "method": "job.list",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_job.rb",
+      "line": 14
+    },
+    {
+      "method": "job.stop",
+      "arguments": "(jid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_job.rb",
+      "line": 30
+    },
+    {
+      "method": "module.ack",
+      "arguments": "(uuid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 568
+    },
+    {
+      "method": "module.architectures",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 615
+    },
+    {
+      "method": "module.auxiliary",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 37
+    },
+    {
+      "method": "module.check",
+      "arguments": "(mtype, mname, opts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 528
+    },
+    {
+      "method": "module.compatible_evasion_payloads",
+      "arguments": "(mname)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 332
+    },
+    {
+      "method": "module.compatible_payloads",
+      "arguments": "(mname)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 310
+    },
+    {
+      "method": "module.compatible_sessions",
+      "arguments": "(mname)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 353
+    },
+    {
+      "method": "module.encode",
+      "arguments": "(data, encoder, options)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 657
+    },
+    {
+      "method": "module.encode_formats",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 625
+    },
+    {
+      "method": "module.encoders",
+      "arguments": "(module_info = nil, arch = nil)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 116
+    },
+    {
+      "method": "module.encryption_formats",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 595
+    },
+    {
+      "method": "module.evasion",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 26
+    },
+    {
+      "method": "module.executable_formats",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 577
+    },
+    {
+      "method": "module.execute",
+      "arguments": "(mtype, mname, opts)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 498
+    },
+    {
+      "method": "module.exploits",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 15
+    },
+    {
+      "method": "module.info",
+      "arguments": "(mtype, mname)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 217
+    },
+    {
+      "method": "module.info_html",
+      "arguments": "(mtype, mname)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 197
+    },
+    {
+      "method": "module.nops",
+      "arguments": "(module_info = nil, arch = nil)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 157
+    },
+    {
+      "method": "module.options",
+      "arguments": "(mtype, mname)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 450
+    },
+    {
+      "method": "module.payloads",
+      "arguments": "(module_info = nil, arch = nil)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 59
+    },
+    {
+      "method": "module.platforms",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 604
+    },
+    {
+      "method": "module.post",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 187
+    },
+    {
+      "method": "module.results",
+      "arguments": "(uuid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 544
+    },
+    {
+      "method": "module.running_stats",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 427
+    },
+    {
+      "method": "module.search",
+      "arguments": "(match)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 294
+    },
+    {
+      "method": "module.target_compatible_evasion_payloads",
+      "arguments": "(mname, target)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 407
+    },
+    {
+      "method": "module.target_compatible_payloads",
+      "arguments": "(mname, target)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 383
+    },
+    {
+      "method": "module.transform_formats",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_module.rb",
+      "line": 586
+    },
+    {
+      "method": "plugin.load",
+      "arguments": "(path, xopts = {})",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_plugin.rb",
+      "line": 21
+    },
+    {
+      "method": "plugin.loaded",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_plugin.rb",
+      "line": 81
+    },
+    {
+      "method": "plugin.unload",
+      "arguments": "(name)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_plugin.rb",
+      "line": 61
+    },
+    {
+      "method": "session.compatible_modules",
+      "arguments": "(sid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 531
+    },
+    {
+      "method": "session.interactive_read",
+      "arguments": "(sid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 199
+    },
+    {
+      "method": "session.interactive_write",
+      "arguments": "(sid, data)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 331
+    },
+    {
+      "method": "session.list",
+      "arguments": "",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 29
+    },
+    {
+      "method": "session.meterpreter_directory_separator",
+      "arguments": "(sid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 517
+    },
+    {
+      "method": "session.meterpreter_read",
+      "arguments": "(sid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 181
+    },
+    {
+      "method": "session.meterpreter_run_single",
+      "arguments": "( sid, data)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 445
+    },
+    {
+      "method": "session.meterpreter_script",
+      "arguments": "( sid, data)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 468
+    },
+    {
+      "method": "session.meterpreter_session_detach",
+      "arguments": "(sid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 379
+    },
+    {
+      "method": "session.meterpreter_session_kill",
+      "arguments": "(sid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 402
+    },
+    {
+      "method": "session.meterpreter_tabs",
+      "arguments": "(sid, line)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 427
+    },
+    {
+      "method": "session.meterpreter_transport_change",
+      "arguments": "(sid,opts={})",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 490
+    },
+    {
+      "method": "session.meterpreter_write",
+      "arguments": "(sid, data)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 312
+    },
+    {
+      "method": "session.ring_clear",
+      "arguments": "(sid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 291
+    },
+    {
+      "method": "session.ring_last",
+      "arguments": "(sid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 275
+    },
+    {
+      "method": "session.ring_put",
+      "arguments": "(sid, data)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 254
+    },
+    {
+      "method": "session.ring_read",
+      "arguments": "(sid, ptr = nil)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 231
+    },
+    {
+      "method": "session.shell_read",
+      "arguments": "( sid, ptr=nil)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 112
+    },
+    {
+      "method": "session.shell_upgrade",
+      "arguments": "( sid, lhost, lport)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 159
+    },
+    {
+      "method": "session.shell_write",
+      "arguments": "( sid, data)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 137
+    },
+    {
+      "method": "session.stop",
+      "arguments": "( sid)",
+      "authenticated": true,
+      "source": "lib/msf/core/rpc/v10/rpc_session.rb",
+      "line": 88
+    }
+  ],
+  "commit": "e217fb2d76e34d71ce710f207f9ca419439e2ea4",
+  "source_url": "https://github.com/rapid7/metasploit-framework/tree/e217fb2d76e34d71ce710f207f9ca419439e2ea4/lib/msf/core/rpc/v10"
+}

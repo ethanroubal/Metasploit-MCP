@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "metasploit": {
+      "command": "uv",
+      "args": ["--directory", "/absolute/path/to/Metasploit MCP", "run", "--frozen", "metasploit-mcp"],
+      "env": {
+        "MSF_RPC_URL": "http://127.0.0.1:55553/api/",
+        "MSF_RPC_USER": "msf",
+        "MSF_RPC_PASS": "replace-with-your-local-rpc-password"
+      }
+    }
+  }
+}
