@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "metasploit": {
+      "command": "uv.exe",
+      "args": [
+        "--directory",
+        "C:/Users/you/Metasploit-MCP",
+        "run",
+        "--frozen",
+        "metasploit-mcp",
+        "--launch-rpc"
+      ],
+      "env": {
+        "MSF_RPC_URL": "http://127.0.0.1:55553/api/"
+      }
+    }
+  }
+}

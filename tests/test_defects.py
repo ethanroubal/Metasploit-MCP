@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -90,8 +91,9 @@ async def read_pid(manager, process_id):
     async def read():
         while True:
             text = manager.read(process_id)["text"].strip()
-            if text:
-                return int(text)
+            found = re.search(r"CHILD_PID=(\d+)", text)
+            if found:
+                return int(found[1])
             await asyncio.sleep(0.01)
     return await asyncio.wait_for(read(), 5)
 
@@ -103,9 +105,10 @@ async def test_detached_descendant_cleanup_even_after_parent_exit(terminal, pare
     child_pid = None
     try:
         program = (
-            "import subprocess,sys; "
+            "import os,subprocess,sys; "
             "p=subprocess.Popen([sys.executable,'-c','import time; time.sleep(30)'], "
-            "start_new_session=True); print(p.pid,flush=True); "
+            "**({'creationflags':512} if os.name=='nt' else {'start_new_session':True})); "
+            "print('CHILD_PID='+str(p.pid),flush=True); "
             + ("pass" if parent_exits else "sys.stdin.read()")
         )
         started = await manager.start([sys.executable, "-u", "-c", program], terminal=terminal)
@@ -117,7 +120,7 @@ async def test_detached_descendant_cleanup_even_after_parent_exit(terminal, pare
         assert not is_active(child_pid)
     finally:
         if child_pid and is_active(child_pid):
-            os.kill(child_pid, signal.SIGKILL)
+            psutil.Process(child_pid).kill()
         await manager.shutdown()
 
 
@@ -168,8 +171,9 @@ def test_managed_rpc_cleanup_recovers_orphaned_descendant(tmp_path):
     owner = ProcessOwner()
     pid_file = tmp_path / "child.pid"
     program = (
-        "import pathlib,subprocess,sys; "
-        "p=subprocess.Popen([sys.executable,'-c','import time; time.sleep(30)'],start_new_session=True); "
+        "import os,pathlib,subprocess,sys; "
+        "p=subprocess.Popen([sys.executable,'-c','import time; time.sleep(30)'], "
+        "**({'creationflags':512} if os.name=='nt' else {'start_new_session':True})); "
         f"pathlib.Path({str(pid_file)!r}).write_text(str(p.pid))"
     )
     process = subprocess.Popen([sys.executable, "-c", program], env=owner.environment())
@@ -183,7 +187,7 @@ def test_managed_rpc_cleanup_recovers_orphaned_descendant(tmp_path):
         assert not is_active(child_pid)
     finally:
         if child_pid and is_active(child_pid):
-            os.kill(child_pid, signal.SIGKILL)
+            psutil.Process(child_pid).kill()
         if process.poll() is None:
             process.kill()
             process.wait()
@@ -197,7 +201,7 @@ def test_pid_reuse_check_avoids_signaling_unrelated_group(monkeypatch):
             return False
     owner._root = ReusedIdentity()
     calls = []
-    monkeypatch.setattr(os, "killpg", lambda *args: calls.append(args))
+    monkeypatch.setattr(os, "killpg", lambda *args: calls.append(args), raising=False)
     owner.signal_group(signal.SIGTERM)
     assert not calls
 
@@ -209,6 +213,8 @@ def test_inherited_owner_marker_cannot_be_overridden():
 
 @pytest.mark.parametrize("terminal", [False, True])
 async def test_cancelled_spawn_cleans_child_created_before_handle_return(monkeypatch, terminal):
+    if terminal and os.name == "nt":
+        pytest.skip("ConPTY uses a native spawn adapter instead of asyncio subprocess creation")
     manager = ProcessManager()
     created, release = asyncio.Event(), asyncio.Event()
     child = None

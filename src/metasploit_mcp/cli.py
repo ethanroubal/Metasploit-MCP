@@ -12,6 +12,7 @@ from urllib.parse import urlsplit
 
 from .config import Config
 from .ownership import ProcessOwner
+from .platforms import prepare_command, process_options
 from .rpc import RPCClient, RPCError
 
 
@@ -30,7 +31,7 @@ def stop_process(process):
     process.wait()
 
 
-def launch_rpc(config: Config, executable: str, startup_timeout: float):
+def launch_rpc(config: Config, executable: str, startup_timeout: float, arguments: list[str] | None = None):
     parsed = urlsplit(config.url)
     if parsed.scheme != "http" or parsed.hostname != "127.0.0.1" or parsed.path != "/api/":
         raise ValueError("--launch-rpc requires http://127.0.0.1:PORT/api/")
@@ -44,10 +45,13 @@ def launch_rpc(config: Config, executable: str, startup_timeout: float):
     managed = replace(config, username="mcp", password=secrets.token_urlsafe(32), token="")
     owner = ProcessOwner()
     env = owner.environment({"MSF_RPC_USER": managed.username, "MSF_RPC_PASS": managed.password})
+    command, env = prepare_command(
+        [executable, *(arguments or []), "-a", "127.0.0.1", "-p", str(port), "-u", "/api/", "-S", "-f"], env,
+    )
     process = subprocess.Popen(
-        [executable, "-a", "127.0.0.1", "-p", str(port), "-u", "/api/", "-S", "-f"],
+        command,
         env=env, stdin=subprocess.DEVNULL, stdout=sys.stderr, stderr=sys.stderr,
-        start_new_session=True,
+        **process_options(),
     )
     owner.attach(process.pid)
     process._metasploit_mcp_owner = owner
@@ -75,6 +79,8 @@ def main():
     parser.add_argument("--check", action="store_true", help="Check RPC auth/version and exit")
     parser.add_argument("--launch-rpc", action="store_true", help="Start and own a local msfrpcd child")
     parser.add_argument("--msfrpcd", default="msfrpcd", help="Path to msfrpcd for --launch-rpc")
+    parser.add_argument("--msfrpcd-arg", action="append", default=[],
+                        help="Argument before RPC flags, e.g. a script path when --msfrpcd is Ruby")
     parser.add_argument("--startup-timeout", type=float, default=60)
     args = parser.parse_args()
     process = None
@@ -86,7 +92,7 @@ def main():
         # Route SIGTERM through server cleanup for both RPC and local process children.
         previous_sigterm = signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))
         if args.launch_rpc:
-            config, process = launch_rpc(config, args.msfrpcd, args.startup_timeout)
+            config, process = launch_rpc(config, args.msfrpcd, args.startup_timeout, args.msfrpcd_arg)
         if args.check:
             print(json.dumps({"endpoint": config.url, "version": asyncio.run(check(config))}))
         else:

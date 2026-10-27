@@ -62,7 +62,7 @@ Tests forward every cataloged method through the MessagePack transport using a
 simulated upstream service. This verifies transport coverage and authentication
 placement, **not execution or semantics of all 123 upstream methods**. Other tests
 exercise MCP discovery/calls over real stdio, simulated local HTTP, pipe processes,
-controlling PTYs, terminal input, Ctrl-C, resizing, binary round trips, file chunks,
+controlling PTYs / Windows ConPTY, terminal input, Ctrl-C, resizing, binary round trips, file chunks,
 and cleanup. Regression tests cover detached children before/after parent exit,
 pipe and PTY cleanup, unrelated processes, cancellation, typed map keys, and literal
 marker objects through both MessagePack and MCP. No exploit execution is used in
@@ -77,7 +77,10 @@ every module works on every target or platform.
 Native consoles and an existing RPC daemon have separate in-memory state unless
 the RPC plugin is loaded inside that native console. See the README's shared-instance
 workflow. A bridge can only do what its OS user, installed Framework, dependencies,
-plugins, sessions, network connectivity, and target allow. PTYs are macOS/Linux;
-there is no graphical desktop automation interface. Process output is bounded by
+plugins, sessions, network connectivity, and target allow. POSIX PTYs cover macOS/Linux;
+Windows 10 version 1809+ and Windows 11 use native ConPTY. Windows terminal text is
+UTF-8; pipe output retains arbitrary bytes. Windows signals follow its console
+control and suspend/resume APIs, not POSIX signal semantics. There is no graphical
+desktop automation interface. Process output is bounded by
 available disk capacity; each MCP read is chunked. These are environmental and
 interface limits, not a claim of universal success for every Metasploit action.

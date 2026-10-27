@@ -6,6 +6,7 @@ import sys
 
 import httpx
 import msgpack
+import psutil
 import pytest
 from mcp import Client
 
@@ -202,8 +203,7 @@ async def test_process_environment_cwd_arguments_and_group_cleanup(processes, tm
     assert str(tmp_path) in output["text"] and "value" in output["text"]
     assert processes.list()[0]["pid"] == started["pid"]
     await processes.close(pid)
-    with pytest.raises(ProcessLookupError):
-        os.kill(started["pid"], 0)
+    assert not psutil.pid_exists(started["pid"])
 
 
 async def test_process_signals_and_failed_spawn(processes):
@@ -215,7 +215,10 @@ async def test_process_signals_and_failed_spawn(processes):
     pid = started["process_id"]
     processes.send_signal(pid, "SIGTERM")
     await asyncio.wait_for(processes.get(pid).process.wait(), 3)
-    assert processes.get(pid).process.returncode == -signal.SIGTERM
+    if os.name == "nt":
+        assert processes.get(pid).process.returncode != 0
+    else:
+        assert processes.get(pid).process.returncode == -signal.SIGTERM
 
 
 def test_chunked_local_files_without_corruption(tmp_path):
@@ -267,6 +270,8 @@ async def test_new_tools_through_mcp_with_no_rpc_credentials(tmp_path):
 async def test_stdio_shutdown_cleans_native_children(termination):
     from mcp import StdioServerParameters
 
+    if termination == "sigterm" and os.name == "nt":
+        pytest.skip("Windows TerminateProcess cannot run Python signal/finally handlers")
     params = StdioServerParameters(command=sys.executable, args=["-m", "metasploit_mcp"])
     async with Client(params, read_timeout_seconds=10) as client:
         started = await client.call_tool("msf_process_start", {
@@ -288,9 +293,7 @@ async def test_stdio_shutdown_cleans_native_children(termination):
             await asyncio.sleep(0.1)
     async def exited():
         while True:
-            try:
-                os.kill(native_pid, 0)
-            except ProcessLookupError:
+            if not psutil.pid_exists(native_pid):
                 return
             await asyncio.sleep(0.01)
     await asyncio.wait_for(exited(), 5)

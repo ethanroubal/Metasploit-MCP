@@ -21,11 +21,45 @@ authorized to test.
 - **[Metasploit Framework](https://docs.metasploit.com/)** installed locally.
   Make `msfrpcd`, `msfconsole`, and `msfvenom` available on your PATH, or use their
   absolute paths when launching them.
-- **macOS or Linux** for native process and interactive terminal features.
+- **Windows 10 version 1809 or newer, Windows 11, macOS, or Linux**.
+  Windows interactive terminals use ConPTY through the Windows-only `pywinpty` dependency.
 - **An MCP client** that supports local stdio servers.
 - A configured Metasploit database if you plan to use database operations.
 
 The bridge does not install Metasploit or initialize its database.
+
+### Windows setup
+
+Install Python, Git, uv, and the official
+[Windows Metasploit Framework package](https://docs.metasploit.com/docs/using-metasploit/getting-started/nightly-installers.html#installing-metasploit-on-windows).
+Run the same clone and `uv sync --frozen` commands below from PowerShell. The
+Windows-only ConPTY dependency is installed automatically.
+
+When configuring the MCP client, use Windows paths. JSON requires escaped
+backslashes, for example `"C:\\Users\\you\\Metasploit-MCP"`; forward slashes such as
+`"C:/Users/you/Metasploit-MCP"` also work. `uv.exe` and Metasploit must be on the
+GUI client's PATH, or use absolute paths.
+
+A complete Windows configuration is in
+[examples/mcp-windows.json](examples/mcp-windows.json). It starts the bridge with
+`--launch-rpc`. Rapid7's installed `msfrpcd.bat`, `msfconsole.bat`, and related
+Ruby launchers are resolved to their bundled Ruby interpreter and script so
+arguments retain their literal values without an implicit command shell.
+Custom Ruby installations can instead use:
+
+```powershell
+uv run --frozen metasploit-mcp --launch-rpc --msfrpcd 'C:/Ruby/bin/ruby.exe' --msfrpcd-arg 'C:/metasploit-framework/msfrpcd' --check
+```
+
+To connect to an existing daemon, omit `--launch-rpc` and supply credentials in
+the client configuration. In PowerShell, terminal environment variables use:
+
+```powershell
+$env:MSF_RPC_URL = 'http://127.0.0.1:55553/api/'
+$env:MSF_RPC_USER = 'msf'
+$env:MSF_RPC_PASS = 'your-local-rpc-password'
+uv run --frozen metasploit-mcp --check
+```
 
 ### 1. Clone the repository and install dependencies
 
@@ -289,7 +323,11 @@ Start an interactive native console:
 Use the returned `process_id` with `msf_process_read` and `msf_process_write`.
 Process writes do **not** append newlines. Send `"help\n"` to execute a command,
 `"\u0003"` for Ctrl-C, and `"\u0004"` for terminal EOF. `msf_process_signal` also
-supports POSIX signals, and `msf_process_resize` updates terminal dimensions.
+supports process controls, and `msf_process_resize` updates terminal dimensions.
+On Windows, commands normally end in `"\r\n"`; Ctrl-Z plus Enter is the conventional
+console EOF gesture, whereas Ctrl-D is a POSIX convention. A pipe can always send
+EOF using `close_stdin=true`. Windows terminal input must be valid UTF-8; pipe
+mode preserves arbitrary bytes. Windows resizing accepts dimensions up to 32767.
 
 For standalone tools, use pipe mode to preserve binary stdout exactly:
 
@@ -297,7 +335,11 @@ For standalone tools, use pipe mode to preserve binary stdout exactly:
 {"argv": ["msfvenom", "--help"], "terminal": false}
 ```
 
-The executable and arguments are passed literally with no shell interpolation.
+The executable and arguments are passed literally with no implicit shell interpolation.
+On Windows, Rapid7's bundled Ruby batch launchers are resolved to Ruby and their
+scripts. Other `.bat`/`.cmd` launchers require an explicit interpreter or an explicit
+`cmd.exe /d /c` command string; shell quoting and expansion then follow that shell's
+rules. For PowerShell scripts, use an explicit `powershell.exe -File` invocation.
 Use an absolute executable path when it is not on the MCP client's PATH. `cwd` and
 an `env` object can be supplied. The process tool can launch installed Framework
 utilities, Ruby scripts, and external programs used by Metasploit; it has the
@@ -318,8 +360,15 @@ RPC launcher uses the same ownership tracking. This is lifecycle tracking, not
 OS containment: a process that both removes the marker and loses all known
 ancestry cannot be identified through this mechanism.
 
-PTY output combines stdout/stderr and follows
-terminal transformations; use pipes or output files for binary artifacts.
+Terminal output combines stdout/stderr and follows terminal transformations;
+Windows ConPTY produces Unicode terminal output which is spooled as UTF-8. Use
+pipes or output files for exact binary artifacts. On Windows, `SIGINT` writes
+Ctrl-C in terminal mode; pipe mode attempts `CTRL_BREAK_EVENT`, which requires a
+shared Windows console. `CTRL_C_EVENT` and `CTRL_BREAK_EVENT` can be requested
+explicitly. `SIGTERM`/`SIGKILL` terminate the owned tree; `SIGSTOP`/`SIGCONT` use
+suspend/resume. Other POSIX signals are unavailable. Forcefully terminating the
+bridge process on Windows bypasses Python cleanup; normal MCP disconnect performs
+cleanup, as does normal shutdown on macOS/Linux.
 
 #### Share native console and RPC state
 
@@ -392,6 +441,11 @@ uv sync --frozen --group dev
 uv run --frozen pytest
 uv run --frozen ruff check .
 ```
+
+GitHub Actions runs the suite on Windows, Linux, and macOS with Python 3.11 and
+3.14. Windows-specific integration tests exercise native ConPTY input, interrupts,
+resizing, cleanup, and the shared pipe/file/RPC tests. Live Metasploit smoke tests
+remain opt-in.
 
 Tests cover all 123 cataloged RPC method routes, simulated MessagePack services,
 MCP protocol connections, actual local processes, PTY controlling-terminal behavior,

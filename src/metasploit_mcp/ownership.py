@@ -1,11 +1,11 @@
 """Track local process identity across descendants, new sessions, and reparenting."""
 import os
-import signal
 import time
 import uuid
 
 import psutil
 
+from .platforms import WINDOWS
 from .rpc import RPCError
 
 OWNER_ENV = "METASPLOIT_MCP_PROCESS_OWNER"
@@ -57,19 +57,15 @@ class ProcessOwner:
                 continue
         return [process for process in self._known.values() if self.active(process)]
 
-    @staticmethod
-    def _send(process: psutil.Process, signum: int):
-        try:
-            process.send_signal(signum)
-        except psutil.NoSuchProcess:
-            pass
-
     def signal_group(self, signum: int):
         # Never reuse a bare remembered PID as a process-group target after the
         # leader exits: that PID may now identify an unrelated process group.
         if self._root is not None and self._root.is_running():
             try:
-                os.killpg(self._root.pid, signum)
+                if WINDOWS:
+                    self._root.send_signal(signum)
+                else:
+                    os.killpg(self._root.pid, signum)
             except ProcessLookupError:
                 pass
 
@@ -84,13 +80,22 @@ class ProcessOwner:
                 if not new:
                     break
                 for process in new:
-                    self._send(process, signal.SIGSTOP)
+                    try:
+                        process.suspend()
+                    except psutil.NoSuchProcess:
+                        continue
                     frozen[process.pid] = process
             for process in reversed(list(frozen.values())):
-                self._send(process, signal.SIGTERM)
+                try:
+                    process.terminate()
+                except psutil.NoSuchProcess:
+                    pass
         finally:
             for process in frozen.values():
-                self._send(process, signal.SIGCONT)
+                try:
+                    process.resume()
+                except psutil.NoSuchProcess:
+                    pass
         deadline = time.monotonic() + timeout
         alive = list(frozen.values())
         while alive and time.monotonic() < deadline:
@@ -101,7 +106,10 @@ class ProcessOwner:
         # children whose parent exited before the initial snapshot.
         alive = self.discover()
         for process in alive:
-            self._send(process, signal.SIGKILL)
+            try:
+                process.kill()
+            except psutil.NoSuchProcess:
+                pass
         deadline = time.monotonic() + 2
         while alive and time.monotonic() < deadline:
             alive = [process for process in alive if self.active(process)]

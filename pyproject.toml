@@ -8,6 +8,7 @@ dependencies = [
     "httpx>=0.28,<1",
     "msgpack>=1.1,<2",
     "psutil>=7.2,<8",
+    "pywinpty>=3,<4 ; sys_platform == 'win32'",
 ]
 
 [project.scripts]

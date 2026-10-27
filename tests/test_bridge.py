@@ -259,14 +259,13 @@ def test_launcher_failure_and_managed_child_cleanup(tmp_path):
 
     from metasploit_mcp.cli import launch_rpc
 
-    script = tmp_path / "fake-msfrpcd"
-    script.write_text("#!/bin/sh\nexit 1\n")
-    script.chmod(0o700)
+    script = tmp_path / "fake_msfrpcd.py"
+    script.write_text("raise SystemExit(1)\n")
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]
     with pytest.raises(ValueError, match="exited during startup"):
-        launch_rpc(Config(url=f"http://127.0.0.1:{port}/api/"), str(script), 2)
+        launch_rpc(Config(url=f"http://127.0.0.1:{port}/api/"), sys.executable, 2, [str(script)])
 
 
 def test_config_repr_does_not_expose_secrets():
@@ -277,10 +276,8 @@ def test_config_repr_does_not_expose_secrets():
 
 @pytest.fixture
 def fake_daemon(tmp_path):
-    import shlex
     import socket
 
-    executable = tmp_path / "msfrpcd"
     script = tmp_path / "fake_daemon.py"
     script.write_text(r'''import os
 import sys
@@ -325,14 +322,10 @@ class Handler(BaseHTTPRequestHandler):
 print("simulated daemon startup log", flush=True)
 HTTPServer(("127.0.0.1", port), Handler).serve_forever()
 ''')
-    executable.write_text(
-        "#!/bin/sh\nexec " + shlex.quote(sys.executable) + " " + shlex.quote(str(script)) + ' "$@"\n'
-    )
-    executable.chmod(0o700)
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]
-    return executable, port
+    return script, port
 
 
 def assert_port_closed(port):
@@ -350,7 +343,7 @@ def test_managed_check_over_real_http_and_cleanup(fake_daemon):
     executable, port = fake_daemon
     result = subprocess.run(
         [sys.executable, "-m", "metasploit_mcp", "--launch-rpc", "--check",
-         "--msfrpcd", str(executable), "--startup-timeout", "10"],
+         "--msfrpcd", sys.executable, "--msfrpcd-arg", str(executable), "--startup-timeout", "10"],
         env={**os.environ, "MSF_RPC_URL": f"http://127.0.0.1:{port}/api/"},
         capture_output=True, text=True, timeout=15, check=False,
     )
@@ -364,7 +357,7 @@ async def test_managed_stdio_console_roundtrip_and_shutdown(fake_daemon):
     executable, port = fake_daemon
     params = StdioServerParameters(
         command=sys.executable,
-        args=["-m", "metasploit_mcp", "--launch-rpc", "--msfrpcd", str(executable),
+        args=["-m", "metasploit_mcp", "--launch-rpc", "--msfrpcd", sys.executable, "--msfrpcd-arg", str(executable),
               "--startup-timeout", "10"],
         env={**os.environ, "MSF_RPC_URL": f"http://127.0.0.1:{port}/api/"},
     )
