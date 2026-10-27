@@ -57,6 +57,7 @@ def launch_rpc(config: Config, executable: str, startup_timeout: float, argument
     process._metasploit_mcp_owner = owner
     try:
         deadline = time.monotonic() + startup_timeout
+        last_error = None
         while time.monotonic() < deadline:
             if process.poll() is not None:
                 raise ValueError(
@@ -66,9 +67,13 @@ def launch_rpc(config: Config, executable: str, startup_timeout: float, argument
             try:
                 asyncio.run(check(replace(managed, timeout=min(2, startup_timeout))))
                 return managed, process
-            except RPCError:
+            except RPCError as exc:
+                last_error = str(exc)
                 time.sleep(0.25)
-        raise ValueError("Timed out waiting for msfrpcd to authenticate")
+        if process.poll() is not None:
+            raise ValueError("msfrpcd exited during startup; check stderr")
+        detail = f": {last_error}" if last_error else ""
+        raise ValueError("Timed out waiting for msfrpcd to authenticate" + detail)
     except BaseException:
         stop_process(process)
         raise

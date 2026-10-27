@@ -72,6 +72,7 @@ class ProcessOwner:
     def terminate(self, timeout: float = 2):
         """Stop owned processes, then kill survivors; do not reap asyncio's child."""
         frozen: dict[int, psutil.Process] = {}
+        terminated: set[int] = set()
         try:
             # Freeze each discovered generation before stopping parents so
             # descendants cannot disappear from ancestry during this snapshot.
@@ -88,10 +89,16 @@ class ProcessOwner:
             for process in reversed(list(frozen.values())):
                 try:
                     process.terminate()
+                    terminated.add(process.pid)
                 except psutil.NoSuchProcess:
                     pass
         finally:
             for process in frozen.values():
+                # Windows termination kills suspended processes directly. A
+                # resume after TerminateProcess can race with kernel teardown
+                # and fail with AccessDenied even for an owned process.
+                if WINDOWS and process.pid in terminated:
+                    continue
                 try:
                     process.resume()
                 except psutil.NoSuchProcess:

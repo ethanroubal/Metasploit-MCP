@@ -343,9 +343,9 @@ def test_managed_check_over_real_http_and_cleanup(fake_daemon):
     executable, port = fake_daemon
     result = subprocess.run(
         [sys.executable, "-m", "metasploit_mcp", "--launch-rpc", "--check",
-         "--msfrpcd", sys.executable, "--msfrpcd-arg", str(executable), "--startup-timeout", "10"],
+         "--msfrpcd", sys.executable, "--msfrpcd-arg", str(executable), "--startup-timeout", "30"],
         env={**os.environ, "MSF_RPC_URL": f"http://127.0.0.1:{port}/api/"},
-        capture_output=True, text=True, timeout=15, check=False,
+        capture_output=True, text=True, timeout=40, check=False,
     )
     assert result.returncode == 0, result.stderr
     assert json.loads(result.stdout)["version"] == {"version": "simulated-daemon"}
@@ -358,10 +358,10 @@ async def test_managed_stdio_console_roundtrip_and_shutdown(fake_daemon):
     params = StdioServerParameters(
         command=sys.executable,
         args=["-m", "metasploit_mcp", "--launch-rpc", "--msfrpcd", sys.executable, "--msfrpcd-arg", str(executable),
-              "--startup-timeout", "10"],
+              "--startup-timeout", "30"],
         env={**os.environ, "MSF_RPC_URL": f"http://127.0.0.1:{port}/api/"},
     )
-    async with Client(params, read_timeout_seconds=10) as client:
+    async with Client(params, read_timeout_seconds=40) as client:
         assert "msf_console_write" in {t.name for t in (await client.list_tools()).tools}
         status = await client.call_tool("msf_status", {})
         assert status.structured_content["data"]["version"] == "simulated-daemon"

@@ -112,3 +112,27 @@ async def test_native_conpty_input_control_resize_and_cleanup():
         await manager.close(process_id)
     finally:
         await manager.shutdown()
+
+
+def test_windows_cleanup_does_not_resume_a_terminated_process(monkeypatch):
+    from metasploit_mcp import ownership
+
+    monkeypatch.setattr(ownership, "WINDOWS", True)
+    owner = ownership.ProcessOwner()
+    class FakeProcess:
+        pid = 1
+        running = True
+        def suspend(self):
+            pass
+        def terminate(self):
+            self.running = False
+        def resume(self):
+            raise AssertionError("Terminated Windows processes cannot be resumed")
+        def is_running(self):
+            return self.running
+        def status(self):
+            return "running"
+    process = FakeProcess()
+    monkeypatch.setattr(owner, "discover", lambda: [process] if process.running else [])
+    owner.terminate()
+    assert not process.running
