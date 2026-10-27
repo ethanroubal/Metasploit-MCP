@@ -75,8 +75,7 @@ performed in an environment without Metasploit. No test suite can guarantee that
 every module works on every target or platform.
 
 Native consoles and an existing RPC daemon have separate in-memory state unless
-the RPC plugin is loaded inside that native console. See the README's shared-instance
-workflow. A bridge can only do what its OS user, installed Framework, dependencies,
+the RPC plugin is loaded inside that native console. See the [shared-instance workflow](reference.md#share-native-console-and-rpc-state). A bridge can only do what its OS user, installed Framework, dependencies,
 plugins, sessions, network connectivity, and target allow. POSIX PTYs cover macOS/Linux;
 Windows 10 version 1809+ and Windows 11 use native ConPTY. Windows terminal text is
 UTF-8; pipe output retains arbitrary bytes. Windows signals follow its console
