@@ -25,7 +25,11 @@ uv sync --frozen
 
 ### 2. Add the MCP server
 
-Add this entry to your AI client's MCP configuration:
+**ChatGPT desktop / Codex:** use the [ChatGPT setup guide](docs/chatgpt.md) and
+[TOML configuration](examples/mcp-chatgpt.toml). ChatGPT in a browser requires
+the separate tunnel setup described in that guide.
+
+**Clients that use JSON:** add this entry to your AI client's MCP configuration:
 
 ```json
 {

@@ -1,0 +1,11 @@
+# Merge into ~/.codex/config.toml; keep your other settings.
+# Replace the project path with your clone's absolute path.
+# Windows: use command = "uv.exe" and a path like "C:/Users/you/Metasploit-MCP".
+[mcp_servers.metasploit]
+command = "uv"
+args = [
+  "--directory", "/absolute/path/to/Metasploit-MCP",
+  "run", "--frozen", "metasploit-mcp", "--launch-rpc",
+]
+# Allow the local Metasploit RPC daemon to start before MCP initialization.
+startup_timeout_sec = 120
