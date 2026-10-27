@@ -120,7 +120,7 @@ class RPCClient:
                         raise RPCError("RPC response exceeds the configured byte limit; result was not replayed")
         except httpx.TimeoutException as exc:
             raise RPCError(
-                "RPC timed out. The action may still be running; inspect jobs/sessions/console "
+                f"RPC timed out ({type(exc).__name__}). The action may still be running; inspect jobs/sessions/console "
                 "before repeating it. No request was replayed."
             ) from exc
         except httpx.HTTPError as exc:

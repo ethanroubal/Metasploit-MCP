@@ -293,6 +293,7 @@ class Handler(BaseHTTPRequestHandler):
         pass
 
     def do_POST(self):
+        print("simulated RPC request accepted", file=sys.stderr, flush=True)
         body = self.rfile.read(int(self.headers["Content-Length"]))
         method, *params = msgpack.unpackb(body, raw=False)
         if method == "auth.login":
@@ -320,7 +321,9 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(packed)
 
 print("simulated daemon startup log", flush=True)
-HTTPServer(("127.0.0.1", port), Handler).serve_forever()
+server = HTTPServer(("127.0.0.1", port), Handler)
+print("simulated RPC listening", file=sys.stderr, flush=True)
+server.serve_forever()
 ''')
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
