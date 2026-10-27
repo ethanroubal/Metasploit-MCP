@@ -102,6 +102,40 @@ async def test_legacy_ruby_binary_strings():
         await client.close()
 
 
+@pytest.mark.parametrize("direct_login", [False, True])
+async def test_ruby_bin_protocol_fields_authenticate_and_detect_expiry(direct_login):
+    calls = []
+
+    def handler(request):
+        parts = msgpack.unpackb(request.content, raw=False)
+        calls.append(parts)
+        if parts[0] == "auth.login":
+            result = {b"result": b"success", b"token": b"ruby-token"}
+        elif parts[0] == "custom.echo":
+            assert parts[1] == "ruby-token"
+            result = {b"payload": b"\x00\xff"}
+        else:
+            result = {b"error": True, b"error_code": 401,
+                      b"error_message": b"Expired ruby-token"}
+        return FakeMetasploit.response(result)
+
+    client = RPCClient(Config(password="password"), httpx.MockTransport(handler))
+    try:
+        if direct_login:
+            await client.call("auth.login", ["msf", "password"])
+        assert await client.call("custom.echo") == {
+            "$map": [[{"$binary": "cGF5bG9hZA=="}, {"$binary": "AP8="}]],
+        }
+        with pytest.raises(RPCError, match=r"401: Expired \[redacted\]") as error:
+            await client.call("module.execute", ["auxiliary", "example", {}])
+        assert error.value.authentication
+        await client.call("custom.echo")
+        assert sum(parts[0] == "auth.login" for parts in calls) == 2
+        assert sum(parts[0] == "module.execute" for parts in calls) == 1
+    finally:
+        await client.close()
+
+
 async def test_authentication_expiry_does_not_replay_action(rpc):
     client, service, _ = rpc
     await client.call("core.version")

@@ -34,9 +34,21 @@ uv sync --frozen
    | --- | --- |
    | Name | `metasploit` |
    | Command | `uv` (`uv.exe` on Windows) |
-   | Arguments | `--directory /absolute/path/to/Metasploit-MCP run --frozen metasploit-mcp --launch-rpc` |
 
-3. Replace the project path with your clone's absolute path, then **Save** and
+3. Add each argument below as a **separate entry**, in this order:
+
+   ```text
+   --directory
+   /absolute/path/to/Metasploit-MCP
+   run
+   --frozen
+   metasploit-mcp
+   --launch-rpc
+   ```
+
+   The directory must be this cloned project, not `msfconsole` or the Metasploit
+   installation. Keep the entire path in one entry, including any spaces.
+4. Replace the project path with your clone's absolute path, then **Save** and
    select **Restart**.
 
 Alternatively, use the [TOML configuration](examples/mcp-chatgpt.toml) for
@@ -92,6 +104,10 @@ configured Metasploit database.
 
 - **Command not found:** use absolute paths for `uv` and `msfrpcd`. Append
   `"--msfrpcd", "/path/to/msfrpcd"` to the configuration's `args` if needed.
+- **Desktop setup:** enter each argument separately. If Metasploit is installed
+  under `/opt/metasploit-framework`, add `--msfrpcd` and
+  `/opt/metasploit-framework/bin/msfrpcd` as two more argument entries. For slow
+  startup, set `startup_timeout_sec = 120` using the [TOML example](examples/mcp-chatgpt.toml).
 - **Port already in use:** connect to the running daemon using the
   [existing-daemon configuration](examples/mcp.json).
 

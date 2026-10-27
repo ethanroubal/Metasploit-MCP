@@ -15,7 +15,11 @@ ChatGPT desktop and Codex share local MCP configuration, according to the
    `msf_status`.
 
 Alternatively, open **Settings → MCP servers → Add server**, choose **STDIO**,
-and enter the sample's command and arguments. Save and select **Restart**.
+and enter the sample's command and arguments. Add each argument as a separate
+entry; the project path is one entry even when it contains spaces. `--directory`
+must point to this cloned project, not the Metasploit installation or `msfconsole`.
+See the [README's desktop steps](../README.md#2-add-the-mcp-server).
+Save and select **Restart**.
 The TOML example allows 120 seconds for startup because Metasploit can take longer
 than the client's default timeout.
 

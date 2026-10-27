@@ -70,8 +70,9 @@ automated tests.
 
 Live smoke tests are opt-in (`MSF_LIVE_TESTS=1`) and require an installed, configured
 local Metasploit daemon. They exercise version, health, module search, and a console
-round trip. A full live module/session/database compatibility run has not been
-performed in an environment without Metasploit. No test suite can guarantee that
+round trip. A separate live stdio smoke check successfully discovered all 23 tools
+and called `msf_status` against Metasploit 6.5.9-dev on macOS. A full live
+module/session/database compatibility run has not been performed. No test suite can guarantee that
 every module works on every target or platform.
 
 Native consoles and an existing RPC daemon have separate in-memory state unless

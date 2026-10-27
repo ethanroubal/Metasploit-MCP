@@ -20,6 +20,17 @@ class RPCError(Exception):
         self.authentication = authentication
 
 
+def protocol_field(value: Any, name: str, default: Any = None) -> Any:
+    """Ruby can encode protocol field names and strings as MessagePack bin."""
+    if not isinstance(value, dict):
+        return default
+    return value.get(name, value.get(name.encode(), default))
+
+
+def protocol_text(value: Any) -> Any:
+    return value.decode("utf-8", errors="replace") if isinstance(value, bytes) else value
+
+
 def decode_input(value: Any) -> Any:
     """Decode bytes and typed/escaped maps without reserving any literal map key."""
     if isinstance(value, dict):
@@ -139,12 +150,12 @@ class RPCClient:
                     authentication=status == 401,
                 ) from exc
             raise RPCError("RPC returned invalid MessagePack; check the endpoint") from exc
-        if isinstance(result, dict) and result.get("error"):
-            code = result.get("error_code", status)
+        if protocol_field(result, "error"):
+            code = protocol_text(protocol_field(result, "error_code", status))
             # Modern Metasploit uses error_message; older services use error_string.
-            message = self._redact(str(result.get(
-                "error_message", result.get("error_string", "RPC request failed"),
-            )))
+            message = self._redact(str(protocol_text(protocol_field(
+                result, "error_message", protocol_field(result, "error_string", "RPC request failed"),
+            ))))
             raise RPCError(
                 f"Metasploit RPC error {code}: {message}",
                 authentication=status == 401 or str(code) == "401",
@@ -153,7 +164,7 @@ class RPCClient:
             raise RPCError(
                 f"RPC HTTP status {status}; check endpoint and daemon", authentication=status == 401,
             )
-        if isinstance(result, dict) and result.get("result") == "failure":
+        if protocol_text(protocol_field(result, "result")) == "failure":
             raise RPCError("Metasploit returned failure; check method arguments and object IDs")
         return result
 
@@ -179,10 +190,11 @@ class RPCClient:
                     login = await self._request([
                         "auth.login", self.config.username, self.config.password,
                     ], timeout)
-                    if (not isinstance(login, dict) or login.get("result") != "success"
-                            or not isinstance(login.get("token"), str)):
+                    login_token = protocol_text(protocol_field(login, "token"))
+                    if (protocol_text(protocol_field(login, "result")) != "success"
+                            or not isinstance(login_token, str) or not login_token):
                         raise RPCError("RPC login failed")
-                    self._token = login["token"]
+                    self._token = login_token
                 token = self._token
         try:
             result = await self._request(
@@ -194,9 +206,12 @@ class RPCClient:
                     if self._token == token:
                         self._token = self.config.token
             raise
-        if method == "auth.login" and isinstance(result, dict) and result.get("result") == "success":
+        if method == "auth.login" and protocol_text(protocol_field(result, "result")) == "success":
             async with self._lock:
-                self._token = result["token"]
+                login_token = protocol_text(protocol_field(result, "token"))
+                if not isinstance(login_token, str) or not login_token:
+                    raise RPCError("RPC login failed")
+                self._token = login_token
         elif method == "auth.logout":
             async with self._lock:
                 if self._token == token:
