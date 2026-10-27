@@ -26,6 +26,11 @@ than the client's default timeout.
 If a command is not found, use absolute paths for `uv` and `msfrpcd` as explained
 in [troubleshooting](../README.md#troubleshooting).
 
+Each automatic connection starts its own Metasploit instance on a free local port.
+Chats therefore have separate sessions and jobs. An explicit `MSF_RPC_URL` pins
+the port; omit it for concurrent automatic connections, or use an existing daemon
+to [share state](reference.md#connect-to-an-existing-rpc-daemon).
+
 ## ChatGPT in a browser
 
 The browser does not load the local TOML file. This bridge serves stdio, not an

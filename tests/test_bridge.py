@@ -338,6 +338,8 @@ class Handler(BaseHTTPRequestHandler):
             assert params.pop(0) == "daemon-token"
             if method == "core.version":
                 result = {"version": "simulated-daemon"}
+                if os.environ.get("SIMULATED_REPORT_PORT"):
+                    result["port"] = port
             elif method == "console.create":
                 consoles["0"] = ""
                 result = {"id": "0"}
@@ -417,3 +419,25 @@ async def test_managed_stdio_console_roundtrip_and_shutdown(fake_daemon):
         output = await client.call_tool("msf_console_read", {"console_id": cid})
         assert output.structured_content["data"]["data"] == "simulated output:version\n"
     assert_port_closed(port)
+
+
+async def test_multiple_managed_stdio_clients_use_distinct_ports_and_cleanup(fake_daemon):
+    executable, _ = fake_daemon
+    params = StdioServerParameters(
+        command=sys.executable,
+        args=["-m", "metasploit_mcp", "--launch-rpc", "--msfrpcd", sys.executable,
+              "--msfrpcd-arg", str(executable), "--startup-timeout", "30"],
+        env={**{k: v for k, v in os.environ.items() if k != "MSF_RPC_URL"},
+             "SIMULATED_REPORT_PORT": "1"},
+    )
+    async with Client(params, read_timeout_seconds=40) as first:
+        first_status = await first.call_tool("msf_status", {})
+        first_port = first_status.structured_content["data"]["port"]
+        async with Client(params, read_timeout_seconds=40) as second:
+            second_status = await second.call_tool("msf_status", {})
+            second_port = second_status.structured_content["data"]["port"]
+            assert first_port != second_port
+            assert not (await first.call_tool("msf_status", {})).is_error
+        assert_port_closed(second_port)
+        assert not (await first.call_tool("msf_status", {})).is_error
+    assert_port_closed(first_port)

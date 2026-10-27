@@ -286,7 +286,7 @@ operations continue to use Metasploit's session commands/APIs.
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `MSF_RPC_URL` | `http://127.0.0.1:55553/api/` | Local MessagePack endpoint |
+| `MSF_RPC_URL` | `http://127.0.0.1:55553/api/` | Local MessagePack endpoint. With `--launch-rpc`, leaving it unset chooses a free port per connection; an explicit URL pins the port. |
 | `MSF_RPC_USER` | `msf` | RPC username |
 | `MSF_RPC_PASS` | empty | RPC password |
 | `MSF_RPC_TOKEN` | empty | Existing token; takes precedence over password |

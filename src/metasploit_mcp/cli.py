@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import json
+import os
 import secrets
 import signal
 import socket
@@ -35,12 +36,14 @@ def launch_rpc(config: Config, executable: str, startup_timeout: float, argument
     parsed = urlsplit(config.url)
     if parsed.scheme != "http" or parsed.hostname != "127.0.0.1" or parsed.path != "/api/":
         raise ValueError("--launch-rpc requires http://127.0.0.1:PORT/api/")
-    port = parsed.port or 80
+    port = parsed.port if parsed.port is not None else 80
     with socket.socket() as probe:
         try:
             probe.bind(("127.0.0.1", port))
+            port = probe.getsockname()[1]
         except OSError as exc:
             raise ValueError("RPC port is already in use; omit --launch-rpc to connect to it") from exc
+    config = replace(config, url=f"http://127.0.0.1:{port}/api/")
     # Recent msfrpcd supports these environment variables, avoiding secrets in argv.
     managed = replace(config, username="mcp", password=secrets.token_urlsafe(32), token="")
     owner = ProcessOwner()
@@ -97,6 +100,10 @@ def main():
         # Route SIGTERM through server cleanup for both RPC and local process children.
         previous_sigterm = signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))
         if args.launch_rpc:
+            if "MSF_RPC_URL" not in os.environ:
+                # Each stdio client owns a daemon. Choose a free port so chats
+                # can run concurrently; explicit endpoints retain their port.
+                config = replace(config, url="http://127.0.0.1:0/api/")
             config, process = launch_rpc(config, args.msfrpcd, args.startup_timeout, args.msfrpcd_arg)
         if args.check:
             print(json.dumps({"endpoint": config.url, "version": asyncio.run(check(config))}))

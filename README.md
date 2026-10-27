@@ -82,8 +82,9 @@ See the [Windows configuration](examples/mcp-windows.json).
 Restart your AI client and ask it to call `msf_status`. A successful response shows
 the Metasploit version.
 
-The client starts the MCP server and local RPC daemon automatically. The bridge
-creates temporary credentials and stops its daemon on shutdown. Automatic startup
+The client starts the MCP server and local RPC daemon automatically. Each connection
+gets a free local port and temporary credentials, so multiple chats can run at once.
+The bridge stops its own daemon on shutdown. Automatic startup
 requires a recent Metasploit release; for an existing or older daemon, follow
 [these instructions](docs/reference.md#connect-to-an-existing-rpc-daemon).
 
@@ -108,7 +109,8 @@ configured Metasploit database.
   under `/opt/metasploit-framework`, add `--msfrpcd` and
   `/opt/metasploit-framework/bin/msfrpcd` as two more argument entries. For slow
   startup, set `startup_timeout_sec = 120` using the [TOML example](examples/mcp-chatgpt.toml).
-- **Port already in use:** connect to the running daemon using the
+- **Port already in use:** remove `MSF_RPC_URL` from an automatic-startup
+  configuration to choose a free port, or connect to the running daemon using the
   [existing-daemon configuration](examples/mcp.json).
 
 ### More information
