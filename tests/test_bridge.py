@@ -282,6 +282,7 @@ def fake_daemon(tmp_path):
     script.write_text(r'''import os
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from socketserver import TCPServer
 import msgpack
 
 args = sys.argv
@@ -321,7 +322,15 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(packed)
 
 print("simulated daemon startup log", flush=True)
-server = HTTPServer(("127.0.0.1", port), Handler)
+class LocalRPCServer(HTTPServer):
+    def server_bind(self):
+        # HTTPServer normally performs a reverse-DNS lookup here. The simulated
+        # loopback service does not need DNS, which can stall on macOS runners.
+        TCPServer.server_bind(self)
+        self.server_name = "localhost"
+        self.server_port = self.server_address[1]
+
+server = LocalRPCServer(("127.0.0.1", port), Handler)
 print("simulated RPC listening", file=sys.stderr, flush=True)
 server.serve_forever()
 ''')
