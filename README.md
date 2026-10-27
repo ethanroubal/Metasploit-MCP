@@ -25,9 +25,23 @@ uv sync --frozen
 
 ### 2. Add the MCP server
 
-**ChatGPT desktop / Codex:** use the [ChatGPT setup guide](docs/chatgpt.md) and
-[TOML configuration](examples/mcp-chatgpt.toml). ChatGPT in a browser requires
-the separate tunnel setup described in that guide.
+**ChatGPT desktop — through the app:**
+
+1. Open **Settings → MCP servers → Add server** and choose **STDIO**.
+2. Enter these settings:
+
+   | Field | Value |
+   | --- | --- |
+   | Name | `metasploit` |
+   | Command | `uv` (`uv.exe` on Windows) |
+   | Arguments | `--directory /absolute/path/to/Metasploit-MCP run --frozen metasploit-mcp --launch-rpc` |
+
+3. Replace the project path with your clone's absolute path, then **Save** and
+   select **Restart**.
+
+Alternatively, use the [TOML configuration](examples/mcp-chatgpt.toml) for
+ChatGPT desktop / Codex. ChatGPT in a browser requires the separate tunnel setup
+in the [ChatGPT setup guide](docs/chatgpt.md).
 
 **Clients that use JSON:** add this entry to your AI client's MCP configuration:
 
